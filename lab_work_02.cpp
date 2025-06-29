@@ -4,18 +4,15 @@
 #include <iomanip>
 using namespace std;
 
-// Generate all combinations of a–z (length 1, 2, 3) → unique encrypted values
 void generatePolygramMapping(unordered_map<string, string>& map) {
     int counter = 1;
 
-    // 1-letter blocks
     for (char c1 = 'a'; c1 <= 'z'; ++c1) {
         string block = "";
         block += c1;
         map[block] = "e" + to_string(counter++);
     }
 
-    // 2-letter blocks
     for (char c1 = 'a'; c1 <= 'z'; ++c1) {
         for (char c2 = 'a'; c2 <= 'z'; ++c2) {
             string block = "";
@@ -25,7 +22,6 @@ void generatePolygramMapping(unordered_map<string, string>& map) {
         }
     }
 
-    // 3-letter blocks
     for (char c1 = 'a'; c1 <= 'z'; ++c1) {
         for (char c2 = 'a'; c2 <= 'z'; ++c2) {
             for (char c3 = 'a'; c3 <= 'z'; ++c3) {
@@ -39,7 +35,6 @@ void generatePolygramMapping(unordered_map<string, string>& map) {
     }
 }
 
-// Encrypt plaintext using the mapping
 string encryptPolygram(const string& plaintext, const unordered_map<string, string>& mapping) {
     string encrypted = "";
     size_t i = 0;
@@ -47,7 +42,6 @@ string encryptPolygram(const string& plaintext, const unordered_map<string, stri
     while (i < plaintext.length()) {
         bool matched = false;
 
-        // Try 3-letter block
         if (i + 3 <= plaintext.length()) {
             string block = plaintext.substr(i, 3);
             if (mapping.count(block)) {
@@ -58,7 +52,6 @@ string encryptPolygram(const string& plaintext, const unordered_map<string, stri
             }
         }
 
-        // Try 2-letter block
         if (!matched && i + 2 <= plaintext.length()) {
             string block = plaintext.substr(i, 2);
             if (mapping.count(block)) {
@@ -69,7 +62,6 @@ string encryptPolygram(const string& plaintext, const unordered_map<string, stri
             }
         }
 
-        // Try 1-letter block
         if (!matched) {
             string block = plaintext.substr(i, 1);
             encrypted += mapping.at(block);
@@ -80,18 +72,15 @@ string encryptPolygram(const string& plaintext, const unordered_map<string, stri
     return encrypted;
 }
 
-// Decrypt ciphertext using reverse mapping
 string decryptPolygram(const string& ciphertext, const unordered_map<string, string>& reverseMap) {
     string decrypted = "";
     size_t i = 0;
 
     while (i < ciphertext.length()) {
-        // Each encoded block is prefixed with 'e' and followed by digits
         if (ciphertext[i] == 'e') {
             string code = "e";
             ++i;
 
-            // Read until non-digit or end
             while (i < ciphertext.length() && isdigit(ciphertext[i])) {
                 code += ciphertext[i++];
             }
@@ -114,7 +103,6 @@ int main() {
     unordered_map<string, string> polygramMap;
     generatePolygramMapping(polygramMap);
 
-    // Build reverse map
     unordered_map<string, string> reverseMap;
     for (const auto& pair : polygramMap) {
         reverseMap[pair.second] = pair.first;
